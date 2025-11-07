@@ -1,101 +1,132 @@
-"""Job matching utilities leveraging resume parsing insights."""
+"""Helpers for calling Hugging Face Inference API to score resume job fit."""
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+import requests, os, json, re
+from typing import Any, Dict
 
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from dotenv import load_dotenv
 
-from backend.ai_engine.resume_parser import SKILLS
+load_dotenv()
 
-
-def _prepare_documents(resume_text: str, job_description: str) -> Tuple[str, str]:
-    """Normalize and validate text documents for similarity analysis."""
-
-    resume = (resume_text or "").strip()
-    job = (job_description or "").strip()
-    return resume, job
+API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-3-8B-Instruct"
+API_TOKEN_ENV = "HUGGINGFACE_API_KEY"
 
 
-def calculate_job_fit(resume_text: str, job_description: str) -> float:
-    """Calculate job fit percentage using TF-IDF cosine similarity.
+def get_ai_job_match(resume_text: str, job_description: str) -> Dict[str, Any]:
+    """Fetch an AI-based job match analysis from Hugging Face Inference API.
 
     Args:
-        resume_text: Cleaned resume text.
-        job_description: Target job description text.
+        resume_text: Plain text of the candidate's resume.
+        job_description: Plain text description of the job role.
 
     Returns:
-        Job fit score as a percentage rounded to two decimals.
+        Parsed dictionary containing match insights.
+
+    Raises:
+        RuntimeError: If the API call fails or returns malformed data.
     """
 
-    resume, job = _prepare_documents(resume_text, job_description)
+    api_token = os.getenv(API_TOKEN_ENV)
+    if not api_token:
+        raise RuntimeError(f"Missing {API_TOKEN_ENV} environment variable for Hugging Face token.")
 
-    if not resume or not job:
-        return 0.0
+    prompt = (
+        "You are an expert technical recruiter. Given the resume and job description, "
+        "produce ONLY valid JSON with this schema:\n"
+        "{\n"
+        "  \"match_score\": integer between 0 and 100,\n"
+        "  \"matched_skills\": array of strings,\n"
+        "  \"missing_skills\": array of strings,\n"
+        "  \"strengths\": array of strings,\n"
+        "  \"weaknesses\": array of strings,\n"
+        "  \"recommendation\": one of [\"Shortlist\", \"Maybe\", \"Reject\"]\n"
+        "}\n"
+        "Resume:\n"
+        f"{resume_text}\n\n"
+        "Job Description:\n"
+        f"{job_description}\n"
+    )
+
+    headers = {
+        "Authorization": f"Bearer {api_token}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "temperature": 0.2,
+            "max_new_tokens": 512,
+        },
+        "options": {
+            "wait_for_model": True,
+        },
+    }
+
+    response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
+    if response.status_code != 200:
+        raise RuntimeError(
+            f"Hugging Face API error {response.status_code}: {response.text}"
+        )
 
     try:
-        vectorizer = TfidfVectorizer(stop_words="english")
-        vectors = vectorizer.fit_transform([resume, job])
-        similarity_matrix = cosine_similarity(vectors[0:1], vectors[1:2])
-        score = float(np.clip(similarity_matrix[0][0], 0.0, 1.0) * 100)
-    except ValueError:
-        return 0.0
-    except Exception as exc:  # pragma: no cover - defensive path
-        raise RuntimeError(f"Failed to calculate job fit score: {exc}") from exc
+        data = response.json()
+    except json.JSONDecodeError as exc:  # pragma: no cover - network dependent
+        raise RuntimeError("Failed to parse Hugging Face response as JSON.") from exc
 
-    return round(score, 2)
+    generated_text = None
+    if isinstance(data, list) and data:
+        generated_text = data[0].get("generated_text")
+    elif isinstance(data, dict):
+        generated_text = data.get("generated_text")
 
+    if not generated_text:
+        raise RuntimeError("Hugging Face API did not return generated_text.")
 
-def extract_skill_match(resume_text: str, job_description: str) -> Dict[str, List[str]]:
-    """Identify overlapping and missing skills between resume and job description."""
-
-    resume, job = _prepare_documents(resume_text, job_description)
-
-    resume_lower = resume.lower()
-    job_lower = job.lower()
-
-    matched_skills = sorted({skill for skill in SKILLS if skill in resume_lower and skill in job_lower})
-    job_skills = {skill for skill in SKILLS if skill in job_lower}
-    missing_skills = sorted(job_skills.difference(matched_skills))
-
-    return {
-        "matched_skills": matched_skills,
-        "missing_skills": missing_skills,
-    }
+    return clean_json_output(generated_text)
 
 
-def build_candidate_profile(fields: Dict[str, object], score: float) -> Dict[str, object]:
-    """Construct a candidate profile summary.
+def clean_json_output(text: str) -> Dict[str, Any]:
+    """Normalize JSON-looking AI output into a Python dictionary.
 
     Args:
-        fields: Field dictionary produced by `extract_fields`.
-        score: Job fit score as a percentage.
+        text: Raw text containing JSON.
 
     Returns:
-        Structured candidate profile including a recommendation label.
+        Parsed dictionary extracted from the text.
+
+    Raises:
+        RuntimeError: If valid JSON cannot be extracted.
     """
 
-    if fields is None:
-        fields = {}
+    start_idx = text.find("{")
+    end_idx = text.rfind("}")
+    if start_idx == -1 or end_idx == -1 or end_idx <= start_idx:
+        raise RuntimeError("No JSON object found in AI output.")
 
-    safe_skills = fields.get("skills", []) if isinstance(fields.get("skills"), list) else []
-    experience = fields.get("experience", 0)
-    education = fields.get("education", "")
+    json_candidate = text[start_idx : end_idx + 1]
 
-    if score >= 75:
-        recommendation = "Shortlist"
-    elif score >= 50:
-        recommendation = "Maybe shortlist"
-    else:
-        recommendation = "Reject"
+    # Replace single quotes with double quotes when they appear as string delimiters.
+    json_candidate = re.sub(r"'(?=[^\"]*?(?:\"|$))", '"', json_candidate)
 
-    return {
-        "skills": safe_skills,
-        "experience": experience,
-        "education": education,
-        "job_fit": round(score, 2),
-        "recommendation": recommendation,
-    }
+    # Remove trailing commas before closing braces/brackets.
+    json_candidate = re.sub(r",\s*(?=[}\]])", "", json_candidate)
+
+    # Ensure recommendation is capitalized correctly.
+    json_candidate = re.sub(
+        r"\"recommendation\"\s*:\s*\"(shortlist|maybe|reject)\"",
+        lambda m: f'"recommendation": "{m.group(1).capitalize()}"',
+        json_candidate,
+    )
+
+    try:
+        parsed = json.loads(json_candidate)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("Failed to cleanly parse AI JSON output.") from exc
+
+    return parsed
+
+
+__all__ = ["get_ai_job_match", "clean_json_output"]
+
 
