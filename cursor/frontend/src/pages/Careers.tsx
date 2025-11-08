@@ -221,9 +221,9 @@ export default function Careers() {
             }
           }}
         >
+          <div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
           <GlassCard
             className="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-3xl font-bold mb-2 neon-text">
               Apply for {selectedJob.title}
@@ -382,6 +382,7 @@ export default function Careers() {
               </div>
             </form>
           </GlassCard>
+          </div>
         </motion.div>
       )}
     </div>

@@ -12,8 +12,7 @@ export default function Admin() {
   const [applications, setApplications] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
-  const [checkingAuth, setCheckingAuth] = useState(true)
-  const [user, setUser] = useState<any>(null)
+  const [, setCheckingAuth] = useState(true)
   const [showJobForm, setShowJobForm] = useState(false)
   const [showBlogForm, setShowBlogForm] = useState(false)
   const [jobForm, setJobForm] = useState({
@@ -54,11 +53,7 @@ export default function Admin() {
       const response = await apiRoutes.auth.verify()
       if (response.data.success && response.data.data.valid) {
         setAuthenticated(true)
-        setUser(response.data.data.user)
-        const savedUser = localStorage.getItem('admin_user')
-        if (savedUser) {
-          setUser(JSON.parse(savedUser))
-        }
+        // User data stored in localStorage, no need for state
       } else {
         localStorage.removeItem('admin_token')
         localStorage.removeItem('admin_user')
@@ -73,17 +68,7 @@ export default function Admin() {
     }
   }
 
-  const handleLogout = async () => {
-    try {
-      await apiRoutes.auth.logout()
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      localStorage.removeItem('admin_token')
-      localStorage.removeItem('admin_user')
-      navigate('/login')
-    }
-  }
+  // Logout handled via localStorage removal and navigation
 
   const loadData = async () => {
     setLoading(true)

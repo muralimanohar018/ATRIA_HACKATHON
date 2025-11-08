@@ -57,7 +57,7 @@ export default function Services() {
       const response = await apiRoutes.ai.summarize(prompt + ' ' + service.originalDesc)
       if (response.data.success) {
         const newServices = [...services]
-        newServices[index].description = response.data.data.summary || service.originalDesc
+        newServices[index].description = response.data.data.summary ?? service.originalDesc ?? ''
         setServices(newServices)
       }
     } catch (error) {

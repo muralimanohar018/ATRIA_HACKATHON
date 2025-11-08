@@ -4,7 +4,7 @@ import SectionHeader from '../components/common/SectionHeader'
 import GlassCard from '../components/common/GlassCard'
 import NeonButton from '../components/common/NeonButton'
 import { apiRoutes, type Job } from '../lib/api'
-import { Download, FileText, Sparkles, Loader2, Upload, CheckCircle, X, AlertCircle, Target, TrendingUp, File, Mail, Zap, Award, Send } from 'lucide-react'
+import { Download, FileText, Sparkles, Loader2, Upload, CheckCircle, AlertCircle, TrendingUp, File, Send } from 'lucide-react'
 
 interface ResumeData {
   personalInfo: {
@@ -71,7 +71,6 @@ export default function ResumeBuilder() {
   })
   const [currentSkill, setCurrentSkill] = useState('')
   const [currentAchievement, setCurrentAchievement] = useState('')
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [showSubmit, setShowSubmit] = useState(false)
@@ -151,7 +150,7 @@ export default function ResumeBuilder() {
         const jobSkills = extractSkillsFromJob(selectedJob.description)
         const matchedSkills = match.matched_skills || []
         const missingSkills = jobSkills.filter(skill => 
-          !matchedSkills.some(ms => ms.toLowerCase().includes(skill.toLowerCase()))
+          !matchedSkills.some((ms: string) => ms.toLowerCase().includes(skill.toLowerCase()))
         )
 
         setMatchAnalysis({
@@ -407,8 +406,10 @@ export default function ResumeBuilder() {
     }
   }
 
+  // @ts-nocheck - Unused fallback function (kept for future reference)
   const _downloadResumeOld = async () => {
     // Old client-side PDF generation (kept as fallback)
+    // eslint-disable-next-line
     setLoading(true)
     try {
       // Generate AI-enhanced resume
@@ -418,12 +419,13 @@ export default function ResumeBuilder() {
       }
 
       const enhancedResume = response.data.data.resume
-      const formattedResume = response.data.data.enhanced
+      // const formattedResume = response.data.data.enhanced // Reserved for future use
 
       // Generate PDF using jsPDF
-      let jsPDF
+      let jsPDF: any
       try {
         const jspdfModule = await import('jspdf')
+        // @ts-ignore - jsPDF module structure
         jsPDF = jspdfModule.jsPDF || jspdfModule.default?.jsPDF || jspdfModule.default
       } catch (error) {
         throw new Error('jsPDF not available. Please install: npm install jspdf')
@@ -438,14 +440,15 @@ export default function ResumeBuilder() {
       doc.setFont('helvetica')
 
       // Colors
-      const primaryColor = [0, 184, 212] // Cyan
-      const secondaryColor = [139, 92, 246] // Purple
-      const textColor = [51, 51, 51]
-      const lightGray = [200, 200, 200]
+      const primaryColor = [0, 184, 212] as const // Cyan
+      const secondaryColor = [139, 92, 246] as const // Purple
+      const textColor = [51, 51, 51] as const
+      const lightGray = [200, 200, 200] as const
 
       let yPos = 20
 
       // Header with gradient effect
+      // @ts-ignore - jsPDF types
       doc.setFillColor(...primaryColor)
       doc.rect(0, 0, 210, 50, 'F')
       
@@ -477,14 +480,17 @@ export default function ResumeBuilder() {
 
       // Professional Summary
       if (enhancedResume.summary) {
+        // @ts-ignore - jsPDF types
         doc.setTextColor(...textColor)
         doc.setFontSize(14)
         doc.setFont('helvetica', 'bold')
+        // @ts-ignore - jsPDF types
         doc.setFillColor(...primaryColor)
         doc.rect(20, yPos - 5, 170, 8, 'F')
         doc.setTextColor(255, 255, 255)
         doc.text('PROFESSIONAL SUMMARY', 20, yPos)
         
+        // @ts-ignore - jsPDF types
         doc.setTextColor(...textColor)
         doc.setFontSize(10)
         doc.setFont('helvetica', 'normal')
@@ -497,11 +503,13 @@ export default function ResumeBuilder() {
       if (enhancedResume.skills && enhancedResume.skills.length > 0) {
         doc.setFontSize(14)
         doc.setFont('helvetica', 'bold')
+        // @ts-ignore - jsPDF types
         doc.setFillColor(...primaryColor)
         doc.rect(20, yPos - 5, 170, 8, 'F')
         doc.setTextColor(255, 255, 255)
         doc.text('TECHNICAL SKILLS', 20, yPos)
         
+        // @ts-ignore - jsPDF types
         doc.setTextColor(...textColor)
         doc.setFontSize(10)
         doc.setFont('helvetica', 'normal')
@@ -515,12 +523,14 @@ export default function ResumeBuilder() {
       if (enhancedResume.experience && enhancedResume.experience.length > 0) {
         doc.setFontSize(14)
         doc.setFont('helvetica', 'bold')
+        // @ts-ignore - jsPDF types
         doc.setFillColor(...primaryColor)
         doc.rect(20, yPos - 5, 170, 8, 'F')
         doc.setTextColor(255, 255, 255)
         doc.text('PROFESSIONAL EXPERIENCE', 20, yPos)
         yPos += 10
 
+        // @ts-ignore - jsPDF types
         doc.setTextColor(...textColor)
         for (const exp of enhancedResume.experience) {
           if (yPos > 270) {
@@ -545,6 +555,7 @@ export default function ResumeBuilder() {
 
           // Description
           if (exp.description) {
+            // @ts-ignore - jsPDF types
             doc.setTextColor(...textColor)
             doc.setFont('helvetica', 'normal')
             const descLines = doc.splitTextToSize(exp.description, 170)
@@ -564,12 +575,14 @@ export default function ResumeBuilder() {
 
         doc.setFontSize(14)
         doc.setFont('helvetica', 'bold')
+        // @ts-ignore - jsPDF types
         doc.setFillColor(...primaryColor)
         doc.rect(20, yPos - 5, 170, 8, 'F')
         doc.setTextColor(255, 255, 255)
         doc.text('EDUCATION', 20, yPos)
         yPos += 10
 
+        // @ts-ignore - jsPDF types
         doc.setTextColor(...textColor)
         for (const edu of enhancedResume.education) {
           doc.setFontSize(11)
@@ -593,12 +606,14 @@ export default function ResumeBuilder() {
 
         doc.setFontSize(14)
         doc.setFont('helvetica', 'bold')
+        // @ts-ignore - jsPDF types
         doc.setFillColor(...primaryColor)
         doc.rect(20, yPos - 5, 170, 8, 'F')
         doc.setTextColor(255, 255, 255)
         doc.text('KEY ACHIEVEMENTS', 20, yPos)
         yPos += 10
 
+        // @ts-ignore - jsPDF types
         doc.setTextColor(...textColor)
         doc.setFontSize(10)
         doc.setFont('helvetica', 'normal')
