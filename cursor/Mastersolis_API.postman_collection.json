@@ -1,0 +1,482 @@
+{
+	"info": {
+		"_postman_id": "mastersolis-api-collection",
+		"name": "Mastersolis Infotech API",
+		"description": "Complete API collection for Mastersolis Infotech AI-powered backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health & Public",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Check if the backend service is running"
+					},
+					"response": []
+				},
+				{
+					"name": "Root",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						},
+						"description": "Root endpoint"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Jobs",
+			"item": [
+				{
+					"name": "List All Jobs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/jobs",
+							"host": ["{{base_url}}"],
+							"path": ["jobs"]
+						},
+						"description": "Get list of all available jobs"
+					},
+					"response": []
+				},
+				{
+					"name": "Apply for Job",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"1234567890\",\n  \"job_id\": 1,\n  \"resume_text\": \"Experienced Python developer with 5 years in Flask, SQL, and machine learning. Worked on multiple AI projects.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/apply",
+							"host": ["{{base_url}}"],
+							"path": ["apply"]
+						},
+						"description": "Submit job application with resume. Returns AI match score and sends confirmation email."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Blogs",
+			"item": [
+				{
+					"name": "List All Blogs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/blogs",
+							"host": ["{{base_url}}"],
+							"path": ["blogs"]
+						},
+						"description": "Get list of all blog posts with AI-generated summaries"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Blog Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"The Future of AI in Business\",\n  \"content\": \"Artificial Intelligence is transforming the way we work and live. In this comprehensive article, we explore the latest trends and developments in AI technology, machine learning, and their impact on various industries. From healthcare to finance, AI is revolutionizing processes and creating new opportunities.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/blogs",
+							"host": ["{{base_url}}"],
+							"path": ["blogs"]
+						},
+						"description": "Create a new blog post. AI automatically generates summary and SEO description."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Testimonials",
+			"item": [
+				{
+					"name": "Create Testimonial",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"raw_text\": \"Great company, amazing service! They helped us a lot with our project.\",\n  \"author\": \"Jane Smith\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/testimonials",
+							"host": ["{{base_url}}"],
+							"path": ["testimonials"]
+						},
+						"description": "Create a testimonial. AI automatically rephrases and polishes the text."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Case Studies",
+			"item": [
+				{
+					"name": "Analyze Case Study",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"We implemented an AI-powered solution for a healthcare client that reduced processing time by 60% and improved accuracy by 95%. The system uses machine learning algorithms to analyze patient data and provide real-time insights.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/case-studies/analyze",
+							"host": ["{{base_url}}"],
+							"path": ["case-studies", "analyze"]
+						},
+						"description": "Analyze a case study. AI extracts insights, key points, and generates summary."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AI Endpoints",
+			"item": [
+				{
+					"name": "Parse Resume",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"file_path\": \"/path/to/resume.pdf\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/parse-resume",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "parse-resume"]
+						},
+						"description": "Parse resume from PDF or DOCX file. Extracts text and structured fields."
+					},
+					"response": []
+				},
+				{
+					"name": "Job Match Analysis",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resume_text\": \"Experienced Python developer with Flask, SQL, and machine learning experience. 5 years in software development.\",\n  \"job_description\": \"We are looking for a Python developer with Flask experience, SQL knowledge, and AI/ML background. Must have 3+ years experience.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/job-match",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "job-match"]
+						},
+						"description": "Analyze resume match against job description. Returns match score, matched skills, missing skills, and recommendations."
+					},
+					"response": []
+				},
+				{
+					"name": "Summarize Text",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"text\": \"Artificial Intelligence is transforming businesses across industries. Machine learning algorithms can process vast amounts of data to identify patterns and make predictions. Companies are leveraging AI to automate processes, improve customer experiences, and drive innovation.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/summarize",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "summarize"]
+						},
+						"description": "Generate AI-powered summary of text content."
+					},
+					"response": []
+				},
+				{
+					"name": "Generate SEO Description",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"text\": \"This article discusses the future of artificial intelligence in business applications and how companies can leverage AI to improve their operations.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/seo",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "seo"]
+						},
+						"description": "Generate SEO-friendly description (max 160 characters) from text."
+					},
+					"response": []
+				},
+				{
+					"name": "Rephrase Testimonial",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"text\": \"Great company, amazing service! They helped us a lot.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/rephrase",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "rephrase"]
+						},
+						"description": "Rephrase and polish testimonial text using AI."
+					},
+					"response": []
+				},
+				{
+					"name": "Analyze Case Study",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"text\": \"We implemented an AI solution that reduced costs by 40% and improved efficiency by 60%.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/case-study",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "case-study"]
+						},
+						"description": "Analyze case study content and extract insights."
+					},
+					"response": []
+				},
+				{
+					"name": "Preview Email - Job Application",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"kind\": \"job\",\n  \"job_title\": \"AI Engineer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/email/preview",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "email", "preview"]
+						},
+						"description": "Preview AI-generated email for job application confirmation."
+					},
+					"response": []
+				},
+				{
+					"name": "Preview Email - Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Jane Smith\",\n  \"kind\": \"contact\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/email/preview",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "email", "preview"]
+						},
+						"description": "Preview AI-generated email for contact form confirmation."
+					},
+					"response": []
+				},
+				{
+					"name": "Preview Email - Shortlist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"kind\": \"shortlist\",\n  \"job_title\": \"Senior Developer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/ai/email/preview",
+							"host": ["{{base_url}}"],
+							"path": ["ai", "email", "preview"]
+						},
+						"description": "Preview AI-generated email for shortlist notification."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Create Job",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"AI Engineer\",\n  \"description\": \"We are looking for an experienced AI Engineer with Python, Flask, SQL, and machine learning expertise. Must have 3+ years of experience in AI/ML projects.\",\n  \"location\": \"Bengaluru\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/jobs",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "jobs"]
+						},
+						"description": "Create a new job posting (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "List All Jobs (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/jobs",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "jobs"]
+						},
+						"description": "Get list of all jobs (Admin view with full descriptions)"
+					},
+					"response": []
+				},
+				{
+					"name": "List Applications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/applications",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "applications"]
+						},
+						"description": "Get list of all job applications with AI match scores and resume text (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Blog (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"How AI is Transforming Business\",\n  \"content\": \"Artificial Intelligence is revolutionizing how businesses operate. From automating routine tasks to providing deep insights through data analysis, AI is becoming an essential tool for modern enterprises.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/blogs",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "blogs"]
+						},
+						"description": "Create a new blog post with AI-generated summary and SEO (Admin only)"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5001",
+			"type": "string"
+		}
+	]
+}
+
